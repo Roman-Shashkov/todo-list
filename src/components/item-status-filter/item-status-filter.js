@@ -14,7 +14,7 @@ export default class ItemStatusFilter extends Component {
 
     const buttons = this.buttons.map(({name, label}) => {
       const isActive = filter === name
-      const isClass = isActive ? 'btn-info' : 'btn-outline-secondary'
+      const isClass = isActive ? 'btn-warning' : 'btn-outline-secondary'
 
       return (
         <button type="button"
@@ -27,7 +27,7 @@ export default class ItemStatusFilter extends Component {
     })
 
     return (
-      <div className="btn-group">
+      <div>
         {buttons}
       </div>
     );

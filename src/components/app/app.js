@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import ReactDOM from 'react-dom';
 
 import AppHeader from '../app-header';
 import TodoList from '../todo-list';
@@ -9,7 +8,7 @@ import './app.css';
 
 export default class App extends Component {
 
-  maxId = 100
+  maxId = 0
 
   state = {
     todoData: [],
@@ -103,6 +102,7 @@ export default class App extends Component {
   
   render () {
 
+    localStorage.setItem ('items',JSON.stringify());
     const {todoData, filter} = this.state;
     const visibleItems = this.filter(todoData, filter);
     const doneCount = todoData.filter((el) => el.done).length;
