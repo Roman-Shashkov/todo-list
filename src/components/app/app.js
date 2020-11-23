@@ -5,23 +5,25 @@ import TodoList from '../todo-list';
 import ItemStatusFilter from '../item-status-filter';
 import ItemAddForm from '../item-add-form'
 import './app.css';
+import storage from '../../utils/storage';
 
 export default class App extends Component {
 
   maxId = 0
 
   state = {
-    todoData: [],
+    todoData: storage.get('todolist') || [],
     filter: 'all',
   }
 
   createTodoItem(label) {
+    this.maxId += 1;
     return {
       label,
       important: false,
       done: false,
-      id: this.maxId++
-    }
+      id: this.maxId,
+    };
   }
 
   deleteItem = (id) => {
@@ -32,7 +34,7 @@ export default class App extends Component {
         ...todoData.slice(0, idx),
         ...todoData.slice(idx + 1)
       ];
-
+      storage.set("todolist", newArray);
       return {
         todoData: newArray
       }
@@ -41,17 +43,12 @@ export default class App extends Component {
 
   addItem = (text) => {
     const newItem = this.createTodoItem(text)
-
-    this.setState(({todoData}) => {
-      const newArr = [
-        ...todoData,
-        newItem
-      ]
-      return {
-        todoData: newArr,
-      }
-    } )
-
+    const newArr = [
+      ...this.state.todoData,
+      newItem
+    ];
+    storage.set("todolist", newArr);
+    this.setState ({todoData: newArr})
   }
 
   toggleProperty (arr, id, propName) {
@@ -59,12 +56,13 @@ export default class App extends Component {
 
     const oldItem =arr[idx];
     const newItem = {...oldItem, [propName]: !oldItem[propName]};
-
-    return [
+    const newArr = [
       ...arr.slice(0, idx),
       newItem,
       ...arr.slice(idx + 1)
-    ]
+    ];
+    storage.set("todolist", newArr);
+    return newArr;
   }
 
   onToggleImportant = (id) => {
@@ -102,11 +100,11 @@ export default class App extends Component {
   
   render () {
 
-    localStorage.setItem ('items',JSON.stringify());
     const {todoData, filter} = this.state;
     const visibleItems = this.filter(todoData, filter);
     const doneCount = todoData.filter((el) => el.done).length;
     const todoCount = todoData.length - doneCount;
+
 
     return (
       <div className="todo-app">
