@@ -1,26 +1,27 @@
 import React, { Component } from 'react';
-
 import AppHeader from '../app-header';
 import TodoList from '../todo-list';
 import ItemStatusFilter from '../item-status-filter';
 import ItemAddForm from '../item-add-form'
 import './app.css';
+import storage from '../../utils/storage'
 
 export default class App extends Component {
 
   maxId = 0
 
   state = {
-    todoData: [],
+    todoData: storage.get('todo') || [],
     filter: 'all',
   }
 
   createTodoItem(label) {
+    this.maxId +=1;
     return {
       label,
       important: false,
       done: false,
-      id: this.maxId++
+      id: this.maxId,
     }
   }
 
@@ -32,6 +33,8 @@ export default class App extends Component {
         ...todoData.slice(0, idx),
         ...todoData.slice(idx + 1)
       ];
+
+      storage.set('todo', newArray)
 
       return {
         todoData: newArray
@@ -47,9 +50,8 @@ export default class App extends Component {
         ...todoData,
         newItem
       ]
-      return {
-        todoData: newArr,
-      }
+      storage.set('todo', newArr)
+      this.setState({todoData : newArr})
     } )
 
   }
@@ -59,12 +61,13 @@ export default class App extends Component {
 
     const oldItem =arr[idx];
     const newItem = {...oldItem, [propName]: !oldItem[propName]};
-
-    return [
+    const newArr = [
       ...arr.slice(0, idx),
       newItem,
       ...arr.slice(idx + 1)
-    ]
+    ];
+    storage.set ('todo', newArr)
+    return newArr
   }
 
   onToggleImportant = (id) => {
